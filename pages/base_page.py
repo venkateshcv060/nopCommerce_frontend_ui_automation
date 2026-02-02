@@ -4,6 +4,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.expected_conditions import *
 
+from utilities.retry import retry
 from utilities.waits import *
 
 class BasePage:
@@ -24,10 +25,12 @@ class BasePage:
 
 
 #element actions
+    @retry(retries=2, delay=1)
     def click(self, locator):
         element = wait_for_clickable(self.driver, locator)
         element.click()
 
+    @retry(retries=2, delay=1)
     def send_keys(self, locator, text, clear=True):
         element = wait_for_visibility(self.driver, locator)
         if clear:

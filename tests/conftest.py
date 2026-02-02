@@ -1,10 +1,10 @@
 from datetime import datetime
 
-# import allure
+import allure
 import pytest
 import pytest_html
 import os
-# from allure_commons.types import AttachmentType
+from allure_commons.types import AttachmentType
 
 from selenium import webdriver
 
@@ -31,20 +31,46 @@ def browser(request):
 
 @pytest.fixture(autouse=True,scope='class')
 def setup(browser,request):
-    global driver
+    # global driver
     if browser=='chrome' or browser==None:
         ops=ChromeOptions()
         ops.add_argument("--disable-notifications")
-        # ops.add_argument("--headless=new")
+        prefs = {
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False
+        }
+        ops.add_experimental_option("prefs", prefs)
+        ops.add_argument("--disable-notifications")
+        ops.add_argument("--disable-infobars")
+        ops.add_argument("--disable-save-password-bubble")
+        ops.add_argument("--headless=new")
         # ops.add_argument("--incognito")
         driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=ops)
     elif browser=='firefox':
         ops=FirefoxOptions()
         ops.add_argument("--disable-notifications")
+        ops.set_preference("signon.rememberSignons", False)
+        ops.set_preference("signon.autofillForms", False)
+        ops.set_preference("signon.generation.enabled", False)
+        # Disable notifications
+        ops.set_preference("dom.webnotifications.enabled", False)
+        ops.set_preference("dom.push.enabled", False)
+        # Optional: run in private mode
+        # ops.set_preference("browser.privatebrowsing.autostart", True)
         # ops.add_argument("--headless=new")
         driver=webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()),options=ops)
     elif browser=='edge':
-        driver=webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()))
+        ops=EdgeOptions()
+        prefs = {
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False
+        }
+        ops.add_experimental_option("prefs", prefs)
+        ops.add_argument("--disable-notifications")
+        ops.add_argument("--disable-infobars")
+        ops.add_argument("--disable-save-password-bubble")
+        # ops.add_argument("--inprivate")
+        driver=webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()),options=ops)
     else :
         print("enter valid browser name")
 
@@ -62,40 +88,47 @@ def setup(browser,request):
 
 
 
-# @pytest.hookimpl(hookwrapper=True,tryfirst=True)
-# def pytest_runtest_makereport(item, call):
-#     outcome = yield
-#     report = outcome.get_result()
-#     setattr(item,"rep_"+report.when,report)
+@pytest.hookimpl(hookwrapper=True,tryfirst=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    setattr(item,"rep_"+report.when,report)
+
+    if report.when == "call" and report.failed:
+        # Try to get driver from class
+        driver = getattr(item._request.node.cls, "driver", None)
+
+        if driver:
+            screenshots_dir = os.path.join(os.getcwd(), "screenshots")
+            os.makedirs(screenshots_dir, exist_ok=True)
+
+            test_name = report.nodeid.replace("::", "_").replace("/", "_")
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            file_name = f"{test_name}_{timestamp}.png"
+            filepath = os.path.join(screenshots_dir, file_name)
+
+            driver.save_screenshot(filepath)
+            print(f"\nScreenshot saved at: {filepath}")
+
+            return report
+
+# def pytest_configure(config):
+#     config.metadata["Project"] = "nopCommerce Automation"
+#     config.metadata["Environment"] = "QA"
+#     config.metadata["Browser"] = config.getoption("--browser")
+
+
+
 #
-#     if report.when == "call" and report.failed:
-#         # Try to get driver from class
-#         driver = getattr(item._request.node.cls, "driver", None)
-#
-#         if driver:
-#             screenshots_dir = os.path.join(os.getcwd(), "screenshots")
-#             os.makedirs(screenshots_dir, exist_ok=True)
-#
-#             test_name = report.nodeid.replace("::", "_").replace("/", "_")
-#             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-#             file_name = f"{test_name}_{timestamp}.png"
-#             filepath = os.path.join(screenshots_dir, file_name)
-#
-#             driver.save_screenshot(filepath)
-#             print(f"\nScreenshot saved at: {filepath}")
-#
-#             return report
 #
 #
-#
-#
-# @pytest.fixture(autouse=True)
-# def log_on_failure(request):
-#     yield
-#     driver = getattr(request.cls, "driver", None)
-#     if driver:
-#         # Attach on failure
-#         if request.node.rep_call.failed:
-#             allure.attach(driver.get_screenshot_as_png(),
-#                           name=f"Failed Test Screenshot - {request.node.name}",
-#                           attachment_type=AttachmentType.PNG)
+@pytest.fixture(autouse=True)
+def log_on_failure(request):
+    yield
+    driver = getattr(request.cls, "driver", None)
+    if driver:
+        # Attach on failure
+        if request.node.rep_call.failed:
+            allure.attach(driver.get_screenshot_as_png(),
+                          name=f"Failed Test Screenshot - {request.node.name}",
+                          attachment_type=AttachmentType.PNG)

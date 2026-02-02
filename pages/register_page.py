@@ -5,6 +5,9 @@ from pages.base_page import BasePage
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.expected_conditions import *
 
+from utilities.waits import wait_for_presence
+
+
 class RegisterPage(BasePage):
     REGISTER_BTN=(By.XPATH,"//a[normalize-space()='Register']")
     GENDER_MALE=(By.ID,"gender-male")
@@ -24,8 +27,8 @@ class RegisterPage(BasePage):
     CONFIRM_PASSWORD_ERROR=(By.ID,"ConfirmPassword-error")#The password and confirmation password do not match. or Password is required.
 
     def __init__(self,driver):
-        super().__init__(driver)
-        # self.driver=driver
+        # super().__init__(driver)
+        self.driver=driver
         # self.wait=WebDriverWait(driver,10)
 
     def get_title(self):
@@ -51,7 +54,7 @@ class RegisterPage(BasePage):
         self.send_keys(self.COMPANY_NAME, company)
 
     def newsletter_checkbox(self, subscribe=True):
-        checkbox = self.driver.find_element(self.NEWSLETTER_CHECKBOX)
+        checkbox = wait_for_presence(self.driver, self.NEWSLETTER_CHECKBOX)
         if checkbox.is_selected() != subscribe:
             checkbox.click()
 
@@ -68,7 +71,7 @@ class RegisterPage(BasePage):
         return self.get_text(self.SUCCESS_MESSAGE)
 
     def get_error_messages(self):
-        elements = self.driver.find_elements(self.ERROR_MESSAGES)
+        elements = self.driver.find_elements(*self.ERROR_MESSAGES)
         return [e.text for e in elements]
 
     def get_email_error_text(self):
@@ -76,6 +79,19 @@ class RegisterPage(BasePage):
 
     def get_confirm_password_error_text(self):
         return self.get_text(self.CONFIRM_PASSWORD_ERROR)
+
+
+    def register_user(self, user_input):
+        self.select_gender(user_input["gender"])
+        self.enter_first_name(user_input["first_name"])
+        self.enter_last_name(user_input["last_name"])
+        self.enter_email(user_input["email"])
+        self.enter_company_name(user_input["company"])
+        self.newsletter_checkbox(user_input["newsletter"])
+        self.enter_password(user_input["password"])
+        self.enter_confirm_password(user_input["password"])
+        self.click_register()
+
 
 
 

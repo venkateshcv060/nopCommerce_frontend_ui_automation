@@ -1,4 +1,9 @@
 selenium~=4.40.0
 pytest~=9.0.2
+pytest-xdist
+pytest-rerunfailures
 webdriver-manager~=4.0.2
 PyYAML~=6.0.3
+allure-pytest
+pytest-html
+faker~=25.0.0
