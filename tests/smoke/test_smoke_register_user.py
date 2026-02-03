@@ -9,6 +9,7 @@ from utilities.assertions import assert_registration_result
 @pytest.mark.usefixtures("setup")
 class Test_register_page:
 
+    @pytest.mark.smoke
     @pytest.mark.parametrize("user_data", [RegisterData.VALID_USER,RegisterData])
     def test_user_registration(self,user_data):
         home=HomePage(self.driver)

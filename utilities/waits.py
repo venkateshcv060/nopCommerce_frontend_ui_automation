@@ -2,7 +2,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
+from utilities.logger import get_logger
 
+logger=get_logger()
 def wait_for_visibility(driver, locator, timeout=10):
     try:
         return WebDriverWait(driver, timeout).until(

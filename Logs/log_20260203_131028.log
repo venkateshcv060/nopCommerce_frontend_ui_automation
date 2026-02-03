@@ -1,0 +1,6 @@
+2026-02-03 13:10:32,087 - INFO - started test_computers_category_opens 
+2026-02-03 13:10:32,485 - INFO - Computers category is successfully opened
+2026-02-03 13:10:32,488 - INFO - started test_electronics_category_opens 
+2026-02-03 13:10:32,676 - INFO - Electronics category is successfully opened
+2026-02-03 13:10:32,679 - INFO - started test_apparels_category_opens 
+2026-02-03 13:10:33,102 - INFO - Apparels category is successfully opened

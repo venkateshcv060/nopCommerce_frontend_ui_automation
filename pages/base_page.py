@@ -4,10 +4,12 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.expected_conditions import *
 
+from utilities.read_config import Read_Config
 from utilities.retry import retry
 from utilities.waits import *
 
 class BasePage:
+    particular_url=Read_Config.get_base_url()
     def __init__(self,driver):
         self.driver=driver
         self.wait=WebDriverWait(driver,10)
@@ -16,6 +18,10 @@ class BasePage:
     def open(self, url):
         self.driver.get(url)
         wait_for_page_load(self.driver)
+
+    # def open_particular_url(self,endpoint):
+    #     self.driver.get(self.particular_url+f"{endpoint}")
+    #     wait_for_page_load(self.driver)
 
     def get_title(self):
         return self.driver.title
@@ -56,8 +62,12 @@ class BasePage:
 
 #Dropdown
     def select_by_text(self, locator, text):
-        element = wait_for_presence(self.driver, locator)
+        element = wait_for_clickable(self.driver, locator)
         Select(element).select_by_visible_text(text)
+
+    # def select_by_value(self,locator,value):
+        # element=wait_for_clickable(self.driver,locator)
+
 
     def press_key(self, key):
         self.actions.send_keys(key).perform()

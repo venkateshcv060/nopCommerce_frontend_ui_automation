@@ -43,7 +43,7 @@ def setup(browser,request):
         ops.add_argument("--disable-notifications")
         ops.add_argument("--disable-infobars")
         ops.add_argument("--disable-save-password-bubble")
-        ops.add_argument("--headless=new")
+        # ops.add_argument("--headless=new")
         # ops.add_argument("--incognito")
         driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=ops)
     elif browser=='firefox':
@@ -122,13 +122,14 @@ def pytest_runtest_makereport(item, call):
 #
 #
 #
-@pytest.fixture(autouse=True)
-def log_on_failure(request):
-    yield
-    driver = getattr(request.cls, "driver", None)
-    if driver:
-        # Attach on failure
-        if request.node.rep_call.failed:
-            allure.attach(driver.get_screenshot_as_png(),
-                          name=f"Failed Test Screenshot - {request.node.name}",
-                          attachment_type=AttachmentType.PNG)
+# @pytest.fixture(autouse=True)
+# def log_on_failure(request):
+#     yield
+#     driver = getattr(request.cls, "driver", None)
+#     if driver:
+#         # Attach on failure
+#         if request.node.rep_call.failed:
+#             allure.attach(driver.get_screenshot_as_png(),
+#                           name=f"Failed Test Screenshot - {request.node.name}",
+#                           attachment_type=AttachmentType.PNG)
+
