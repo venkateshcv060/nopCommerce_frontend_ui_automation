@@ -7,3 +7,5 @@ PyYAML~=6.0.3
 allure-pytest
 pytest-html
 faker~=25.0.0
+
+openpyxl

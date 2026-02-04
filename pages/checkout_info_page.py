@@ -18,8 +18,8 @@ class CheckoutInfoPage(BasePage):
         BILLING_PHONE_NUMBER=(By.ID,"BillingNewAddress_PhoneNumber")
         BILLING_FAX_NUMBER=(By.ID,"BillingNewAddress_FaxNumber")
         BILLING_ADDRESS_SAVE_BUTTON=(By.ID,"save-billing-address-button")
-        BILLING_ADDRESS_CONTINUE_BUTTON=(By.XPATH,"//button[@onclick='Billing.save()']")
 
+        BILLING_ADDRESS_CONTINUE_BUTTON=(By.XPATH,"//button[@onclick='Billing.save()']")
         SHIPPING_ADDRESS_CONTINUE_BUTTON=(By.XPATH,"//button[@onclick='Shipping.save()']")
 
         SHIP_BY_GROUND = (By.ID,"shippingoption_0")

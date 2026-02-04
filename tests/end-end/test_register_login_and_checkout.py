@@ -4,6 +4,7 @@ import pytest
 
 from pages.checkout_cart_page import CheckoutPage
 from pages.checkout_info_page import CheckoutInfoPage
+from pages.order_confirmation_page import OrderConfirmation
 from pages.product_description_page import ProductPage
 from utilities.read_config import Read_Config
 from pages.home_page import HomePage
@@ -45,6 +46,8 @@ class Test_Register_And_Login:
         checkout.click_checkout()
         shipping_info = CheckoutInfoPage(self.driver)
         shipping_info.shipping_user(self.shipping_data["indian_guest"])
+        success = OrderConfirmation(self.driver)
+        assert "Thank you" in success.get_order_success_msg()
 
         # self.driver.get(Read_Config.get_base_url() + "login")
         # login = LoginPage(self.driver)

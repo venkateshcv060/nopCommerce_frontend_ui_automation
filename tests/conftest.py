@@ -31,7 +31,7 @@ def browser(request):
 
 @pytest.fixture(autouse=True,scope='class')
 def setup(browser,request):
-    # global driver
+    global driver
     if browser=='chrome' or browser==None:
         ops=ChromeOptions()
         ops.add_argument("--disable-notifications")
@@ -43,8 +43,9 @@ def setup(browser,request):
         ops.add_argument("--disable-notifications")
         ops.add_argument("--disable-infobars")
         ops.add_argument("--disable-save-password-bubble")
-        # ops.add_argument("--headless=new")
+        ops.add_argument("--headless=new")
         # ops.add_argument("--incognito")
+
         driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=ops)
     elif browser=='firefox':
         ops=FirefoxOptions()
@@ -70,7 +71,8 @@ def setup(browser,request):
         ops.add_argument("--disable-infobars")
         ops.add_argument("--disable-save-password-bubble")
         # ops.add_argument("--inprivate")
-        driver=webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()),options=ops)
+        # driver=webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()),options=ops)
+        driver=webdriver.Edge(options=ops)
     else :
         print("enter valid browser name")
 
@@ -119,17 +121,37 @@ def pytest_runtest_makereport(item, call):
 
 
 
-#
-#
-#
-# @pytest.fixture(autouse=True)
-# def log_on_failure(request):
-#     yield
-#     driver = getattr(request.cls, "driver", None)
-#     if driver:
-#         # Attach on failure
-#         if request.node.rep_call.failed:
-#             allure.attach(driver.get_screenshot_as_png(),
-#                           name=f"Failed Test Screenshot - {request.node.name}",
-#                           attachment_type=AttachmentType.PNG)
+@pytest.fixture(autouse=True)
+def log_on_failure(request):
+    yield
+    driver = getattr(request.cls, "driver", None)
+    if driver:
+        # Attach on failure
+        if request.node.rep_call.failed:
+            allure.attach(driver.get_screenshot_as_png(),
+                          name=f"Failed Test Screenshot - {request.node.name}",
+                          attachment_type=AttachmentType.PNG)
+
+
+
+from utilities.cleanup import clean_directory
+import os
+@pytest.fixture(scope="session", autouse=True)
+def clean_old_reports():
+    project_root = os.getcwd()
+
+    allure_path = os.path.join(project_root, "reports", "allure-results")
+    html_path = os.path.join(project_root, "reports", "html-reports")
+    screenshots_path = os.path.join(project_root, "screenshots")
+    logs_path = os.path.join(project_root, "logs")
+
+    # print("\nCleaning old reports and screenshots...")
+
+    clean_directory(allure_path)
+    clean_directory(html_path)
+    clean_directory(screenshots_path)
+    clean_directory(logs_path)
+
+    yield
+
 

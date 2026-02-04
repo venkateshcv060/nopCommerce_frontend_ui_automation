@@ -6,11 +6,13 @@ from pages.home_page import HomePage
 @pytest.mark.usefixtures("setup")
 class Test_home_page:
 
+    @pytest.mark.regression
     @pytest.mark.smoke
     def test_launch_application(self):
         home=HomePage(self.driver)
         assert "Home page" in home.get_title()
 
+    @pytest.mark.regression
     @pytest.mark.smoke
     def test_base_url(self):
         # base=BasePage(self.driver)

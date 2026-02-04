@@ -11,8 +11,8 @@ class HomePage(BasePage):
     ADD_TO_CART_BUTTON=(By.XPATH,"(//button[@class='button-2 product-box-add-to-cart-button'])[2]")
     SHOPPING_CART_BUTTON = (By.ID, "topcartlink")
     LOGOUT_BUTTON=(By.CSS_SELECTOR,".ico-logout")
-
-
+    SEARCH_FIELD=(By.ID,"small-searchterms")
+    SEARCH_BUTTON=(By.CSS_SELECTOR,".button-1.search-box-button")
 
     def __init__(self,driver):
         # super().__init__(driver)
@@ -37,6 +37,17 @@ class HomePage(BasePage):
 
     def click_logout(self):
         self.click(self.LOGOUT_BUTTON)
+
+    def type_search_field(self, search_word):
+        self.send_keys(self.SEARCH_FIELD,search_word)
+
+    def click_search_button(self):
+        self.click(self.SEARCH_BUTTON)
+
+    def search_product(self,product):
+        self.type_search_field(product)
+        self.click_search_button()
+
 
 
 

@@ -19,15 +19,15 @@ class BasePage:
         self.driver.get(url)
         wait_for_page_load(self.driver)
 
-    # def open_particular_url(self,endpoint):
-    #     self.driver.get(self.particular_url+f"{endpoint}")
-    #     wait_for_page_load(self.driver)
-
     def get_title(self):
         return self.driver.title
 
     def get_current_url(self):
         return self.driver.current_url
+
+    def get_page_source(self):
+        return self.driver.page_source.lower()
+
 
 
 #element actions
@@ -38,7 +38,7 @@ class BasePage:
 
     @retry(retries=2, delay=1)
     def send_keys(self, locator, text, clear=True):
-        element = wait_for_visibility(self.driver, locator)
+        element = wait_for_presence(self.driver, locator)
         if clear:
             element.clear()
         element.send_keys(text)
@@ -61,8 +61,9 @@ class BasePage:
         self.actions.move_to_element(element).perform()
 
 #Dropdown
+    @retry(retries=2, delay=1)
     def select_by_text(self, locator, text):
-        element = wait_for_clickable(self.driver, locator)
+        element = wait_for_presence(self.driver, locator)
         Select(element).select_by_visible_text(text)
 
     # def select_by_value(self,locator,value):

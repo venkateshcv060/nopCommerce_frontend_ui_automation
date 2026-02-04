@@ -3,6 +3,7 @@ import pytest
 from pages.checkout_cart_page import CheckoutPage
 from pages.checkout_info_page import CheckoutInfoPage
 from pages.home_page import HomePage
+from pages.order_confirmation_page import OrderConfirmation
 from pages.product_description_page import ProductPage
 from utilities.utils import read_json
 
@@ -25,8 +26,9 @@ class Test_guest_checkout:
         checkout=CheckoutPage(self.driver)
         checkout.click_terms_of_service()
         checkout.click_checkout()
-        checkout.click_checkout_as_guest()
-        shipping_info=CheckoutInfoPage(self.driver)
-        shipping_info.shipping_user(user)
-        print("test pass")
+        # checkout.click_checkout_as_guest()
+        # shipping_info=CheckoutInfoPage(self.driver)
+        # shipping_info.shipping_user(user)
+        success=OrderConfirmation(self.driver)
+        assert "Thank you" in success.get_order_success_msg()
 
